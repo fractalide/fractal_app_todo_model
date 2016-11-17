@@ -26,7 +26,7 @@ buildFractalideSubnet rec {
    request_get() ip -> input get() response -> ip response_get()
    request_post() ip -> input post() response -> ip response_post()
    request_delete() ip -> input delete() response -> ip response_delete()
-   request_patch -> input patch() response -> ip response_patch()
+   request_patch() ip -> input patch() response -> ip response_patch()
    '';
 
    meta = with stdenv.lib; {
