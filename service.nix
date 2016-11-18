@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }:
 with lib;
 let
-  cfg = config.services.workbench;
+  cfg = config.services.app_todo_model;
   fractalide = import <fractalide> {};
   support = fractalide.support;
   contracts = fractalide.contracts;
@@ -11,20 +11,27 @@ let
   };
   serviceSubnet = support.buildFractalideSubnet rec {
     src = ./.;
-    name = "workbench_service";
+    name = "app_todo_model_service";
     subnet = ''
-    '${contracts.net_http_contracts.address}:(address="${cfg.bindAddress}:${toString cfg.port}")' -> listen workbench(${fractal.components.workbench})
-    '${contracts.path}:(path="${cfg.dbPath}/${cfg.dbName}")' -> db_path workbench()
+    '${contracts.path}:(path="${cfg.dbPath}/${cfg.dbName}")' -> db_path app_todo_model(${fractal.components.model})
+    '${contracts.generic_text}:(text="${cfg.request_get}:${toString cfg.request_get_port}")' -> request_get model()
+    '${contracts.generic_text}:(text="${cfg.request_post}:${toString cfg.request_post_port}")' -> request_post model()
+    '${contracts.generic_text}:(text="${cfg.request_delete}:${toString cfg.request_delete_port}")' -> request_delete model()
+    '${contracts.generic_text}:(text="${cfg.request_patch}:${toString cfg.request_patch_port}")' -> request_patch model()
+    '${contracts.generic_text}:(text="${cfg.response_get}:${toString cfg.response_get_port}")' -> response_get model()
+    '${contracts.generic_text}:(text="${cfg.response_post}:${toString cfg.response_post_port}")' -> response_post model()
+    '${contracts.generic_text}:(text="${cfg.response_delete}:${toString cfg.response_delete_port}")' -> response_delete model()
+    '${contracts.generic_text}:(text="${cfg.response_patch}:${toString cfg.response_patch_port}")' -> response_patch model()
     '';
   };
   fvm = import (<fractalide> + "/support/fvm/") {inherit pkgs support contracts components;};
 in
 {
-  options.services.workbench = {
-    enable = mkEnableOption "Fractalide Workbench Example";
+  options.services.app_todo_model = {
+    enable = mkEnableOption "Fractalide app_todo_model Example";
     package = mkOption {
       default = serviceSubnet;
-      defaultText = "fractalComponents.workbench";
+      defaultText = "fractalComponents.app_todo_model";
       type = types.package;
       description = ''
         Workbench example.
@@ -32,22 +39,8 @@ in
     };
     user = mkOption {
       type = types.str;
-      default = "workbench";
-      description = "User account under which workbench runs.";
-    };
-    bindAddress = mkOption {
-      type = types.string;
-      default = "127.0.0.1";
-      description = ''
-        Defines the IP address by which workbench will be accessible.
-      '';
-    };
-    port = mkOption {
-      type = types.int;
-      default = 8080;
-      description = ''
-        Defined the port number to listen.
-      '';
+      default = "app_todo_model";
+      description = "User account under which app_todo_model runs.";
     };
     dbName = mkOption {
       type = types.str;
@@ -56,8 +49,88 @@ in
     };
     dbPath = mkOption {
       type = types.path;
-      default = "/var/fractalide/workbench";
+      default = "/var/fractalide/app_todo_model";
       description = "The DB will be written to this directory, with the filename specified using the 'dbName' configuration.";
+    };
+    request_get = mkOption {
+      type = types.string;
+      default = "tcp://127.0.0.1";
+      description = "HTTP REQUEST GET interface pin connection string";
+    };
+    request_get_port = mkOption {
+      type = types.int;
+      default = 5551;
+      description = "HTTP REQUEST GET interface pin connection port";
+    };
+    request_post = mkOption {
+      type = types.string;
+      default = "tcp://127.0.0.1";
+      description = "HTTP REQUEST POTS interface pin connection string";
+    };
+    request_post_port = mkOption {
+      type = types.int;
+      default = 5552;
+      description = "HTTP REQUEST POST interface pin connection port";
+    };
+    request_delete = mkOption {
+      type = types.string;
+      default = "tcp://127.0.0.1";
+      description = "HTTP REQUEST DELETE interface pin connection string";
+    };
+    request_delete_port = mkOption {
+      type = types.int;
+      default = 5553;
+      description = "HTTP REQUEST DELETE interface pin connection port";
+    };
+    request_patch = mkOption {
+      type = types.string;
+      default = "tcp://127.0.0.1";
+      description = "HTTP REQUEST PATCH interface pin connection string";
+    };
+    request_patch_port = mkOption {
+      type = types.int;
+      default = 5554;
+      description = "HTTP REQUEST PATCH interface pin connection port";
+    };
+    response_get = mkOption {
+      type = types.string;
+      default = "tcp://127.0.0.1";
+      description = "HTTP RESPONSE GET interface pin connection string";
+    };
+    response_get_port = mkOption {
+      type = types.int;
+      default = 5555;
+      description = "HTTP RESPONSE GET interface pin connection port";
+    };
+    response_post = mkOption {
+      type = types.string;
+      default = "tcp://127.0.0.1";
+      description = "HTTP RESPONSE POST interface pin connection string";
+    };
+    response_post_port = mkOption {
+      type = types.int;
+      default = 5556;
+      description = "HTTP RESPONSE POST interface pin connection port";
+    };
+    response_delete = mkOption {
+      type = types.string;
+      default = "tcp://127.0.0.1";
+      description = "HTTP RESPONSE DELETE interface pin connection string";
+    };
+    response_delete_port = mkOption {
+      type = types.int;
+      default = 5557;
+      description = "HTTP RESPONSE DELETE interface pin connection port";
+    };
+    response_patch = mkOption {
+      type = types.string;
+      default = "tcp://127.0.0.1";
+      description = "HTTP RESPONSE PATCH interface pin connection string";
+    };
+    response_patch_port = mkOption {
+      type = types.int;
+      default = 5558;
+      description = "HTTP RESPONSE PATCH interface pin connection port";
     };
     openFirewall = mkOption {
       type = types.bool;
@@ -69,24 +142,33 @@ in
   };
   config = mkIf cfg.enable {
     networking.firewall = mkIf cfg.openFirewall {
-      allowedTCPPorts = [ cfg.port ];
+      allowedTCPPorts = [
+        cfg.request_get_port
+        cfg.request_post_port
+        cfg.request_delete_port
+        cfg.request_patch_port
+        cfg.response_get_port
+        cfg.response_post_port
+        cfg.response_delete_port
+        cfg.response_patch_port
+      ];
     };
-    users.extraUsers.workbench = {
+    users.extraUsers.app_todo_model = {
       name = cfg.user;
-      #uid = config.ids.uids.workbench;
+      #uid = config.ids.uids.app_todo_model;
       description = "Workbench database user";
     };
-    systemd.services.workbench_init = {
+    systemd.services.app_todo_model_init = {
       description = "Workbench Server Initialisation";
-      wantedBy = [ "workbench.service" ];
-      before = [ "workbench.service" ];
+      wantedBy = [ "app_todo_model.service" ];
+      before = [ "app_todo_model.service" ];
       serviceConfig.Type = "oneshot";
       script = ''
         install -d -m0700 -o ${cfg.user} ${cfg.dbPath}
         chown -R ${cfg.user} ${cfg.dbPath}
       '';
     };
-    systemd.services.workbench = {
+    systemd.services.app_todo_model = {
       description = "Workbench example";
       path = [ cfg.package ];
       after = [ "network.target" ];
