@@ -8,10 +8,10 @@ buildFractalideSubnet rec {
    src = ./.;
    subnet = ''
    db_path => input clone(${ip_clone})
-   clone() clone[1] -> db_path get(${app_todo_components.get})
-   clone() clone[2] -> db_path post(${app_todo_components.post})
-   clone() clone[3] -> db_path delete(${app_todo_components.delete})
-   clone() clone[4] -> db_path patch(${app_todo_components.patch})
+   clone() clone[1] -> db_path get(${app_todo_components.todo_get})
+   clone() clone[2] -> db_path post(${app_todo_components.todo_post})
+   clone() clone[3] -> db_path delete(${app_todo_components.todo_delete})
+   clone() clone[4] -> db_path patch(${app_todo_components.todo_patch})
 
    request_get => connect request_get(${nanomsg_components.pull})
    request_post => connect request_post(${nanomsg_components.pull})
