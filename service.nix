@@ -13,7 +13,7 @@ let
     src = ./.;
     name = "app_todo_model_service";
     subnet = ''
-    '${contracts.path}:(path="${cfg.dbPath}/${cfg.dbName}")' -> db_path app_todo_model(${fractal.components.model})
+    '${contracts.path}:(path="${cfg.dataDir}/${cfg.dbName}")' -> db_path app_todo_model(${fractal.components.model})
     '${contracts.generic_text}:(text="${cfg.request_get}:${toString cfg.request_get_port}")' -> request_get model()
     '${contracts.generic_text}:(text="${cfg.request_post}:${toString cfg.request_post_port}")' -> request_post model()
     '${contracts.generic_text}:(text="${cfg.request_delete}:${toString cfg.request_delete_port}")' -> request_delete model()
@@ -47,7 +47,7 @@ in
       default = "todos.db";
       description = "the database file name.";
     };
-    dbPath = mkOption {
+    dataDir = mkOption {
       type = types.path;
       default = "/var/fractalide/app_todo_model";
       description = "The DB will be written to this directory, with the filename specified using the 'dbName' configuration.";
@@ -164,8 +164,9 @@ in
       before = [ "app_todo_model.service" ];
       serviceConfig.Type = "oneshot";
       script = ''
-        install -d -m0700 -o ${cfg.user} ${cfg.dbPath}
-        chown -R ${cfg.user} ${cfg.dbPath}
+        mkdir -m 0700 -p ${cfg.dataDir}
+        ${pkgs.sqlite.bin}/bin/sqlite3 ${cfg.dataDir}/${cfg.dbName} 'CREATE TABLE `todos` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `ip` BLOB)'
+        chown -R ${cfg.user} ${cfg.dataDir}
       '';
     };
     systemd.services.app_todo_model = {
