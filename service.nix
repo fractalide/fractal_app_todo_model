@@ -13,7 +13,7 @@ let
     src = ./.;
     name = "app_todo_model_service";
     subnet = ''
-    '${contracts.path}:(path="${cfg.dataDir}/${cfg.dbName}")' -> db_path app_todo_model(${fractal.components.model})
+    '${contracts.path}:(path="${cfg.dataDir}/${cfg.dbName}")' -> db_path model(${fractal.components.model})
     '${contracts.generic_text}:(text="${cfg.request_get}:${toString cfg.request_get_port}")' -> request_get model()
     '${contracts.generic_text}:(text="${cfg.request_post}:${toString cfg.request_post_port}")' -> request_post model()
     '${contracts.generic_text}:(text="${cfg.request_delete}:${toString cfg.request_delete_port}")' -> request_delete model()
@@ -164,9 +164,11 @@ in
       before = [ "app_todo_model.service" ];
       serviceConfig.Type = "oneshot";
       script = ''
-        mkdir -m 0700 -p ${cfg.dataDir}
-        ${pkgs.sqlite.bin}/bin/sqlite3 ${cfg.dataDir}/${cfg.dbName} 'CREATE TABLE `todos` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `ip` BLOB)'
-        chown -R ${cfg.user} ${cfg.dataDir}
+        if ! test -e ${cfg.dataDir}/${cfg.dbName}; then
+          mkdir -m 0777 -p ${cfg.dataDir}
+          ${pkgs.sqlite.bin}/bin/sqlite3 ${cfg.dataDir}/${cfg.dbName} 'CREATE TABLE `todos` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `ip` BLOB)'
+          chown -R ${cfg.user} ${cfg.dataDir}
+        fi
       '';
     };
     systemd.services.app_todo_model = {

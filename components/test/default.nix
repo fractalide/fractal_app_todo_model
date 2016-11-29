@@ -1,13 +1,8 @@
-{ stdenv
-  , buildFractalideSubnet
-  , model
-  , path
-  , generic_text
-  , ...}:
+{ subnet, components, contracts }:
 
-buildFractalideSubnet rec {
+subnet {
   src = ./.;
-  subnet = ''
+  flowscript = with components; with contracts; ''
   '${path}:(path="${builtins.getEnv "HOME"}/todos.db")' -> db_path model(${model})
   '${generic_text}:(text="tcp://127.0.0.1:5551")' -> request_get model()
   '${generic_text}:(text="tcp://127.0.0.1:5552")' -> request_post model()
@@ -18,11 +13,4 @@ buildFractalideSubnet rec {
   '${generic_text}:(text="tcp://127.0.0.1:5557")' -> response_delete model()
   '${generic_text}:(text="tcp://127.0.0.1:5558")' -> response_patch model()
   '';
-
-   meta = with stdenv.lib; {
-    description = "Subnet: Counter app";
-    homepage = https://github.com/fractalide/fractalide/tree/master/components/development/test;
-    license = with licenses; [ mpl20 ];
-    maintainers = with upkeepers; [ dmichiels sjmackenzie];
-  };
 }
