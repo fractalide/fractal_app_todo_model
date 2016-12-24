@@ -2,6 +2,7 @@
 
 subgraph {
   src = ./.;
+  edges = with edges; [ path generic_text ];
   flowscript = with nodes; with edges; ''
   '${path}:(path="${builtins.getEnv "HOME"}/todos.db")' -> db_path model(${model})
   '${generic_text}:(text="tcp://127.0.0.1:5551")' -> request_get model()
