@@ -14,14 +14,14 @@ let
     name = "app_todo_model_service";
     subnet = ''
     '${edges.path}:(path="${cfg.dataDir}/${cfg.dbName}")' -> db_path model(${fractal.nodes.model})
-    '${edges.generic_text}:(text="${cfg.request_get}:${toString cfg.request_get_port}")' -> request_get model()
-    '${edges.generic_text}:(text="${cfg.request_post}:${toString cfg.request_post_port}")' -> request_post model()
-    '${edges.generic_text}:(text="${cfg.request_delete}:${toString cfg.request_delete_port}")' -> request_delete model()
-    '${edges.generic_text}:(text="${cfg.request_patch}:${toString cfg.request_patch_port}")' -> request_patch model()
-    '${edges.generic_text}:(text="${cfg.response_get}:${toString cfg.response_get_port}")' -> response_get model()
-    '${edges.generic_text}:(text="${cfg.response_post}:${toString cfg.response_post_port}")' -> response_post model()
-    '${edges.generic_text}:(text="${cfg.response_delete}:${toString cfg.response_delete_port}")' -> response_delete model()
-    '${edges.generic_text}:(text="${cfg.response_patch}:${toString cfg.response_patch_port}")' -> response_patch model()
+    '${edges.prim_text}:(text="${cfg.request_get}:${toString cfg.request_get_port}")' -> request_get model()
+    '${edges.prim_text}:(text="${cfg.request_post}:${toString cfg.request_post_port}")' -> request_post model()
+    '${edges.prim_text}:(text="${cfg.request_delete}:${toString cfg.request_delete_port}")' -> request_delete model()
+    '${edges.prim_text}:(text="${cfg.request_patch}:${toString cfg.request_patch_port}")' -> request_patch model()
+    '${edges.prim_text}:(text="${cfg.response_get}:${toString cfg.response_get_port}")' -> response_get model()
+    '${edges.prim_text}:(text="${cfg.response_post}:${toString cfg.response_post_port}")' -> response_post model()
+    '${edges.prim_text}:(text="${cfg.response_delete}:${toString cfg.response_delete_port}")' -> response_delete model()
+    '${edges.prim_text}:(text="${cfg.response_patch}:${toString cfg.response_patch_port}")' -> response_patch model()
     '';
   };
   fvm = import (<fractalide> + "/support/fvm/") {inherit pkgs support edges nodes;};
