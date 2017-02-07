@@ -2,7 +2,7 @@
 
 subgraph {
   src = ./.;
-  flowscript = with nodes; with edges; ''
+  flowscript = with nodes; ''
   db_path => input clone(${msg_clone})
   clone() clone[1] -> db_path get(${app_todo_nodes.todo_get})
   clone() clone[2] -> db_path post(${app_todo_nodes.todo_post})
