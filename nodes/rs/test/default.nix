@@ -12,7 +12,7 @@ let
 in
 subgraph {
   src = ./.;
-  flowscript = with nodes; ''
+  flowscript = with nodes.rs; ''
     '${FsPath}' -> db_path model(${model})
     '${PrimText1}' -> request_get model()
     '${PrimText2}' -> request_post model()
